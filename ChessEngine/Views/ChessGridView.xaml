@@ -15,7 +15,8 @@
     </i:Interaction.Triggers>
     <Grid>
         <ItemsControl Margin="10"
-                      ItemsSource="{Binding ChessGrid}">
+                      ItemsSource="{Binding ChessGrid}"
+                      Name="chessGrid">
             <ItemsControl.Template>
                 <ControlTemplate TargetType="ItemsControl">
                     <Border BorderBrush="#8B4726" BorderThickness="32" CornerRadius="1">
@@ -49,7 +50,9 @@
                                 </Style>
                             </Rectangle.Style>
                         </Rectangle>
-                        <controls:ChessFigureView Figure="{Binding Figure}"/>
+                        <controls:ChessFigureView Figure="{Binding Figure}"
+                                                  DragInitCommand="{Binding DataContext.DragInitialiseCommand, ElementName=chessGrid}"
+                                                  DragOverCommand="{Binding DataContext.DragOverCommand, ElementName=chessGrid}"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

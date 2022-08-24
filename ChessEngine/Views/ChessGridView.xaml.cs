@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 using Autofac;
 
@@ -15,6 +16,7 @@ namespace ChessEngine.Views
         {
             this.InitializeComponent();
             this.DataContext = Bootstrapper.Container.Resolve<ChessGridViewModel>();
+            //MessageBox.Show("In memory of my grandma...\nMay she rest in peace...", "Message from the developer", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

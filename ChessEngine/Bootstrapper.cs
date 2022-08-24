@@ -20,6 +20,9 @@ namespace ChessEngine
             builder.RegisterType<BoardGeneratorService>()
                 .As<IBoardGeneratorService>();
 
+            builder.RegisterType<RuleService>()
+                .As<IRuleService>();
+
             Container = builder.Build();
         }
     }
