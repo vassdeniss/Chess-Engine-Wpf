@@ -13,17 +13,7 @@ namespace ChessEngine.Services
                 return new MoveInfo(false);
             }
 
-            MoveInfo move = new MoveInfo(true);
-            move.SourceRow = source.Row;
-            move.SourceColumn = source.Column;
-            move.DestinationRow = destination.Row;
-            move.DestinationColumn = destination.Column;
-
-            if (destination.Name != "Empty")
-            {
-                move.TakenFigureRow = destination.Row;
-                move.TakenFigureColumn = destination.Column;
-            }
+            MoveInfo move = this.RegisterMoveData(source, destination);
 
             if (source.Color == Color.White)
             {
@@ -76,22 +66,12 @@ namespace ChessEngine.Services
 
         public MoveInfo CheckLegalMove(Square[,] board, Knight source, ChessFigure destination)
         {
-            if (ColorMatch(source, destination))
+            if (this.ColorMatch(source, destination))
             {
                 return new MoveInfo(false);
             }
 
-            MoveInfo move = new MoveInfo(true);
-            move.SourceRow = source.Row;
-            move.SourceColumn = source.Column;
-            move.DestinationRow = destination.Row;
-            move.DestinationColumn = destination.Column;
-
-            if (destination.Name != "Empty")
-            {
-                move.TakenFigureRow = destination.Row;
-                move.TakenFigureColumn = destination.Column;
-            }
+            MoveInfo move = this.RegisterMoveData(source, destination);
 
             // Vertical G
             if (Math.Abs(source.Row - destination.Row) == 2
@@ -110,9 +90,113 @@ namespace ChessEngine.Services
             return new MoveInfo(false);
         }
 
+        public MoveInfo CheckLegalMove(Square[,] board, Bishop source, ChessFigure destination)
+        {
+            if (this.ColorMatch(source, destination))
+            {
+                return new MoveInfo(false);
+            }
+
+            MoveInfo move = this.RegisterMoveData(source, destination);
+
+            int deltaRow = source.Row - destination.Row;
+            int deltaColumn = source.Column - destination.Column;
+            if (Math.Abs(deltaRow) != Math.Abs(deltaColumn))
+            {
+                return new MoveInfo(false);
+            }
+
+            if (deltaRow > 0 && deltaColumn > 0) // Up left
+            {
+                for (int i = source.Row - 1, j = source.Column - 1; i != destination.Row; i--, j--)
+                {
+                    if (!this.IsEmptySquare(board[i, j]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            if (deltaRow < 0 && deltaColumn < 0) // Down Right
+            {
+                for (int i = source.Row + 1, j = source.Column + 1; i != destination.Row; i++, j++)
+                {
+                    if (!this.IsEmptySquare(board[i, j]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            if (deltaRow > 0 && deltaColumn < 0) // Up right
+            {
+                for (int i = source.Row - 1, j = source.Column + 1; i != destination.Row; i--, j++)
+                {
+                    if (!this.IsEmptySquare(board[i, j]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            if (deltaRow < 0 && deltaColumn > 0) // Down left
+            {
+                for (int i = source.Row + 1, j = source.Column - 1; i != destination.Row; i++, j--)
+                {
+                    if (!this.IsEmptySquare(board[i, j]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            return new MoveInfo(false);
+        }
+
         public MoveInfo CheckLegalMove(Square[,] board, ChessFigure source, ChessFigure destination)
         {
             return new MoveInfo(false);
+        }
+
+        private MoveInfo RegisterMoveData(ChessFigure source, ChessFigure destination)
+        {
+            MoveInfo move = new MoveInfo(false);
+            move.SourceRow = source.Row;
+            move.SourceColumn = source.Column;
+            move.DestinationRow = destination.Row;
+            move.DestinationColumn = destination.Column;
+
+            if (destination.Name == "Empty")
+            {
+                return move;
+            }
+
+            move.TakenFigureRow = destination.Row;
+            move.TakenFigureColumn = destination.Column;
+
+            return move;
+        }
+
+        private bool IsEmptySquare(ChessFigure figure)
+        {
+            return figure.Name == "Empty";
+        }
+
+        private bool IsEmptySquare(Square square)
+        {
+            return square.Figure?.Name == "Empty";
         }
 
         private bool ColorMatch(ChessFigure a, ChessFigure b)

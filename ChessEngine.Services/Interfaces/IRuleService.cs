@@ -8,6 +8,8 @@ namespace ChessEngine.Services.Interfaces
 
         MoveInfo CheckLegalMove(Square[,] board, Knight source, ChessFigure destination);
 
+        MoveInfo CheckLegalMove(Square[,] board, Bishop source, ChessFigure destination);
+
         MoveInfo CheckLegalMove(Square[,] board, ChessFigure source, ChessFigure destination);
     }
 }
