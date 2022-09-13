@@ -22,7 +22,7 @@ namespace ChessEngine.Services
                 {
                     // Does not move diagonally and square is empty
                     if (source.Column == destination.Column 
-                        && destination.Name == "Empty")
+                        && this.IsEmptySquare(destination))
                     {
                         move.IsAllowed = true;
                         return move;
@@ -30,7 +30,7 @@ namespace ChessEngine.Services
 
                     // Does move diagonally and square is not empty and piece is different color
                     if (Math.Abs(destination.Column - source.Column) == 1 
-                        && !this.ColorMatch(source, destination))
+                        && !this.IsEmptySquare(destination) && !this.ColorMatch(source, destination))
                     {
                         move.IsAllowed = true;
                         return move;
@@ -53,7 +53,7 @@ namespace ChessEngine.Services
 
                     // Does move diagonally and square is not empty and piece is different color
                     if (Math.Abs(destination.Column - source.Column) == 1
-                        && !this.ColorMatch(source, destination))
+                        && !this.IsEmptySquare(destination) && !this.ColorMatch(source, destination))
                     {
                         move.IsAllowed = true;
                         return move;
@@ -165,6 +165,58 @@ namespace ChessEngine.Services
             return new MoveInfo(false);
         }
 
+        public MoveInfo CheckLegalMove(Square[,] board, Rook source, ChessFigure destination)
+        {
+            if (this.ColorMatch(source, destination))
+            {
+                return new MoveInfo(false);
+            }
+
+            MoveInfo move = this.RegisterMoveData(source, destination);
+
+            // Horizontally
+            if (source.Row == destination.Row)
+            {
+                for (int i = source.Column + 1; i != destination.Column; i += (source.Column > destination.Column ? -1 : 1))
+                {
+                    if (i == source.Column)
+                    {
+                        continue;
+                    }
+
+                    if (!this.IsEmptySquare(board[source.Row, i]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            // Vertically
+            if (source.Column == destination.Column)
+            {
+                for (int i = source.Row; i != destination.Row; i += (source.Row > destination.Row ? -1 : 1))
+                {
+                    if (i == source.Row)
+                    {
+                        continue;
+                    }
+
+                    if (!this.IsEmptySquare(board[i, source.Column]))
+                    {
+                        return new MoveInfo(false);
+                    }
+                }
+
+                move.IsAllowed = true;
+                return move;
+            }
+
+            return new MoveInfo(false);
+        }
+
         public MoveInfo CheckLegalMove(Square[,] board, ChessFigure source, ChessFigure destination)
         {
             return new MoveInfo(false);
@@ -201,11 +253,6 @@ namespace ChessEngine.Services
 
         private bool ColorMatch(ChessFigure a, ChessFigure b)
         {
-            if (a.Name == "Empty" || b.Name == "Empty")
-            {
-                return false;
-            }
-
             return a.Color == b.Color;
         }
     }
